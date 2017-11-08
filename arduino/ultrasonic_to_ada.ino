@@ -11,8 +11,8 @@
 #define AIO_SERVERPORT  8883
 
 // Pins for Ultrasonic Range Sensor
-const int TRIG_PIN = 2;
-const int ECHO_PIN = 3;
+const int TRIG_PIN = D1;
+const int ECHO_PIN = D2;
 
 // Set up limitation for sensor
 const float MAX_DIST_CM = 400.0;
@@ -69,15 +69,15 @@ void loop() {
 
   // Check if alarm-worthy
   if (alarmTest(measured_cm)) {
-    // Publish a message
-    // publishMessage();
-    Serial.println('STATIC send MQTT message!');
+    publishMessage();
     delay(2000);
+    prev_measure_cm = getDistance();
   }
-
-  // Set the new previous value
-  prev_measure_cm = measured_cm;
-
+  else {
+    // Set the new previous value
+    prev_measure_cm = measured_cm;
+  }
+  
   // Delay
   delay(60);
 }
@@ -120,7 +120,7 @@ bool alarmTest(float new_measure) {
 
 void publishMessage() {
     Serial.println("Sending alarm announcement...");
-    if (! security_feed.publish("Ultrasonic sensor triggered!")) {
+    if (! security_feed.publish("{\"device\":\"ultrasonic_nodemcu\",\"msg\":\"triggered\"}")) {
         Serial.println(F("Failed"));
     } else {
         Serial.println(F("OK!"));
