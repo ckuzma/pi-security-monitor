@@ -16,7 +16,7 @@ const int ECHO_PIN = D2;
 
 // Set up limitation for sensor
 const float MAX_DIST_CM = 400.0;
-const float ALARM_DISTANCE_CHANGE = 1.0;
+const float ALARM_DISTANCE_CHANGE = 2.0;
 
 // Set up space to save previous value
 float prev_measure_cm = 0.0;
@@ -47,10 +47,6 @@ void setup() {
   Serial.println();
   Serial.println("WiFi connected");
   Serial.println("IP address: "); Serial.println(WiFi.localIP());
-
-  // Delay for sensor to be installed properly
-  Serial.println("Waiting 5 seconds...");
-  delay(5000);
 
   // Get initial reading
   Serial.println("Starting...");
@@ -112,16 +108,18 @@ void printDistance(float cm) {
 }
 
 bool alarmTest(float new_measure) {
-    if (prev_measure_cm - new_measure > ALARM_DISTANCE_CHANGE || new_measure - prev_measure_cm > ALARM_DISTANCE_CHANGE) {
-        Serial.println("ALARM!!!");
-        return true;
+    if (new_measure != MAX_DIST_CM) {
+        if (prev_measure_cm - new_measure > ALARM_DISTANCE_CHANGE || new_measure - prev_measure_cm > ALARM_DISTANCE_CHANGE) {
+            Serial.println("ALARM!!!");
+            return true;
+        }
     }
     return false;
 }
 
 void publishMessage() {
     Serial.println("Sending alarm announcement...");
-    if (! security_feed.publish("{\"device\":\"ultrasonic_nodemcu\",\"msg\":\"triggered\"}")) {
+    if (! security_feed.publish("nodemcu_ultrasonic,alarm,triggered")) {
         Serial.println(F("Failed"));
     } else {
         Serial.println(F("OK!"));
