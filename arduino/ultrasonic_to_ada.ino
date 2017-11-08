@@ -85,6 +85,7 @@ void loop() {
 float getDistance() {
     long t1;
     long t2;
+    float distance;
 
     // Hold the trigger pin high for 10 millis
     digitalWrite(TRIG_PIN, HIGH);
@@ -98,16 +99,16 @@ float getDistance() {
     t1 = micros();
     while ( digitalRead(ECHO_PIN) == 1);
     t2 = micros();
-    return (t2 - t1) / 58.0;
+    distance = (t2 - t1) / 58.0;
+    if (distance < MAX_DIST_CM) {
+        return distance;
+    }
+    return MAX_DIST_CM;
 }
   
 void printDistance(float cm) {
-    if (cm > MAX_DIST_CM) {
-        Serial.println("Too far...");
-    } else {
-        Serial.print(cm);
-        Serial.println(" cm");
-    }
+    Serial.print(cm);
+    Serial.println(" cm");
 }
 
 bool alarmTest(float new_measure) {
