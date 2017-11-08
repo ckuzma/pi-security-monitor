@@ -2,103 +2,151 @@
 #include "Adafruit_MQTT.h"
 #include "Adafruit_MQTT_Client.h"
 
-/************************* WiFi Access Point *********************************/
-
+// Credentials
 #define WLAN_SSID       ""
 #define WLAN_PASS       ""
-
-/************************* Adafruit.io Setup *********************************/
-
-#define AIO_SERVER      "io.adafruit.com"
-#define AIO_SERVERPORT  1883                   // use 8883 for SSL
 #define AIO_USERNAME    ""
 #define AIO_KEY         ""
+#define AIO_SERVER      "io.adafruit.com"
+#define AIO_SERVERPORT  8883
 
-/************ Global State (you don't need to change this!) ******************/
+// Pins for Ultrasonic Range Sensor
+const int TRIG_PIN = 2;
+const int ECHO_PIN = 3;
 
-// Create an ESP8266 WiFiClient class to connect to the MQTT server.
-//  WiFiClient client;
-// or... use WiFiFlientSecure for SSL
+// Set up limitation for sensor
+const float MAX_DIST_CM = 400.0;
+const float ALARM_DISTANCE_CHANGE = 1.0;
+
+// Set up space to save previous value
+float prev_measure_cm = 0.0;
+
+// Create secure connection to the MQTT server
 WiFiClientSecure client;
-
-// Setup the MQTT client class by passing in the WiFi client and MQTT server and login details.
 Adafruit_MQTT_Client mqtt(&client, AIO_SERVER, AIO_SERVERPORT, AIO_USERNAME, AIO_KEY);
 
-/****************************** Feeds ***************************************/
-
-Adafruit_MQTT_Publish photocell = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/f/");
-
-/*************************** Sketch Code ************************************/
-
-// Bug workaround for Arduino 1.6.6, it seems to need a function declaration
-// for some reason (only affects ESP8266, likely an arduino-builder bug).
-void MQTT_connect();
+// Conect to feeds
+Adafruit_MQTT_Publish security_feed = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/f/security_feed");
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
   delay(10);
 
+  // Ultrasonic sensor trigger pin
+  pinMode(TRIG_PIN, OUTPUT);
+  digitalWrite(TRIG_PIN, LOW);
+
+  // Connect to WiFi
   Serial.print("Connecting to ");
   Serial.println(WLAN_SSID);
-
   WiFi.begin(WLAN_SSID, WLAN_PASS);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
   Serial.println();
-
   Serial.println("WiFi connected");
   Serial.println("IP address: "); Serial.println(WiFi.localIP());
+
+  // Delay for sensor to be installed properly
+  Serial.println("Waiting 5 seconds...");
+  delay(5000);
+
+  // Get initial reading
+  Serial.println("Starting...");
+  prev_measure_cm = getDistance();
 }
 
 void loop() {
-  // Ensure the connection to the MQTT server is alive (this will make the first
-  // connection and automatically reconnect when disconnected).  See the MQTT_connect
-  // function definition further below.
+  // Reconnect if we hit the timeout
   MQTT_connect();
 
-  // this is our 'wait for incoming subscription packets' busy subloop
-  // try to spend your time here
+  // Get the distance
+  float measured_cm = getDistance();
+  
+  // Print the distance
+  //printDistance(measured_cm);
 
-  // Now we can publish stuff!
-  Serial.println("Sending alarm announcement...");
-  if (! photocell.publish("Ultrasonic sensor triggered!")) {
-    Serial.println(F("Failed"));
-  } else {
-    Serial.println(F("OK!"));
+  // Check if alarm-worthy
+  if (alarmTest(measured_cm)) {
+    // Publish a message
+    // publishMessage();
+    Serial.println('STATIC send MQTT message!');
+    delay(2000);
   }
 
-  // ping the server to keep the mqtt connection alive
-  // NOT required if you are publishing once every KEEPALIVE seconds
-  /*
-  if(! mqtt.ping()) {
-    mqtt.disconnect();
-  }
-  */
+  // Set the new previous value
+  prev_measure_cm = measured_cm;
+
+  // Delay
+  delay(60);
 }
 
-// Function to connect and reconnect as necessary to the MQTT server.
-// Should be called in the loop function and it will take care if connecting.
+float getDistance() {
+    long t1;
+    long t2;
+
+    // Hold the trigger pin high for 10 millis
+    digitalWrite(TRIG_PIN, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(TRIG_PIN, LOW);
+
+    // Wait for pulse on echo pin
+    while ( digitalRead(ECHO_PIN) == 0 );
+
+    // Measure the distance
+    t1 = micros();
+    while ( digitalRead(ECHO_PIN) == 1);
+    t2 = micros();
+    return (t2 - t1) / 58.0;
+}
+  
+void printDistance(float cm) {
+    if (cm > MAX_DIST_CM) {
+        Serial.println("Too far...");
+    } else {
+        Serial.print(cm);
+        Serial.println(" cm");
+    }
+}
+
+bool alarmTest(float new_measure) {
+    if (prev_measure_cm - new_measure > ALARM_DISTANCE_CHANGE || new_measure - prev_measure_cm > ALARM_DISTANCE_CHANGE) {
+        Serial.println("ALARM!!!");
+        return true;
+    }
+    return false;
+}
+
+void publishMessage() {
+    Serial.println("Sending alarm announcement...");
+    if (! security_feed.publish("Ultrasonic sensor triggered!")) {
+        Serial.println(F("Failed"));
+    } else {
+        Serial.println(F("OK!"));
+    }
+}
+
+
 void MQTT_connect() {
+  // Place to store retry attempt count
   int8_t ret;
 
-  // Stop if already connected.
+  // Check if connected
   if (mqtt.connected()) {
     return;
   }
 
+  // Connect w/3 retries
   Serial.print("Connecting to MQTT... ");
-
   uint8_t retries = 3;
-  while ((ret = mqtt.connect()) != 0) { // connect will return 0 for connected
+  while ((ret = mqtt.connect()) != 0) {
        Serial.println(mqtt.connectErrorString(ret));
        Serial.println("Retrying MQTT connection in 5 seconds...");
        mqtt.disconnect();
-       delay(5000);  // wait 5 seconds
+       delay(5000);
        retries--;
        if (retries == 0) {
-         // basically die and wait for WDT to reset me
          while (1);
        }
   }
