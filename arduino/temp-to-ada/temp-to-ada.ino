@@ -10,8 +10,10 @@
 #define AIO_SERVER      "io.adafruit.com"
 #define AIO_SERVERPORT  8883
 
-// Pin for the temp sensor
+// Constants for temp sensor
 const int TEMPERATURE = A0;
+const int B = 4275;
+const int R0 = 100000;
 
 // Create secure connection to the MQTT server
 WiFiClientSecure client;
@@ -48,7 +50,7 @@ void loop() {
   publishMessage(temp);
   
   // Delay
-  delay(1000);
+  delay(5000); // 5 minutes, don't need temp that often
 }
 
 float getTemp() {
