@@ -60,11 +60,6 @@ float getTemp() {
   return 1.0/(log(R/R0)/B+1/298.15)-273.15; // celsius
 }
 
-void displayText(String text) {
-  lcd.clear();
-  lcd.print(text);
-}
-
 void publishMessage(float tempValue) {
     Serial.println("Sending temp value...");
     if (! security_feed.publish(tempValue)) {
