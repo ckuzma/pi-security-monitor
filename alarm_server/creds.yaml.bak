@@ -1,0 +1,10 @@
+nexmo:
+  key: null
+  secret: null
+  num: 11111111111
+twilio:
+  account: null
+  token: null
+  num: 11111111111
+owner:
+  num: 11111111111

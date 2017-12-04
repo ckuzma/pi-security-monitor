@@ -1,15 +1,10 @@
 import json
 import Hologram
 
-## Change this later
-CREDENTIALS = {
-    'device_key': ''
-}
-
 class HologramAPI:
     def __init__(self):
         self.client = Hologram.HologramCloud.HologramCloud(
-            CREDENTIALS['device_key'],
+            dict(),
             network='cellular',
             authentication_type='csrpsk'
         )
@@ -30,6 +25,6 @@ class HologramAPI:
 api = HologramAPI()
 
 ## Send a message
-number = None
+number = 18002255288
 message = 'Hello, this is a test!'
 api.send_sms(number, message)
