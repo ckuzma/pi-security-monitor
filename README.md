@@ -30,3 +30,9 @@ network={
 # Run the Python test apps
 
 # Set up your alarm devices
+
+# Acknowledgements
+The Hologram team created a wealth of documentation including easy-to-read example tutorials. Perhaps the
+[most helpful](https://www.hackster.io/hologram/raspberry-pi-cellular-gateway-1acd6a) of which was found
+on the [Hackster](https://www.hackster.io) website itself, detailing exactly how to set up a Raspberry Pi
+Zero W in headless mode as an AP while also running an MQTT broker for interacting with NodeMCU devices.
