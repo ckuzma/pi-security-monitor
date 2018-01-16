@@ -1,19 +1,19 @@
 import json
 import twilio.rest
+import yaml
 
-CREDENTIALS = {
-  'account': '',
-  'token': '',
-  'num': 18002255288
-}
+## Import the credentials
+CREDENTIALS = None
+with open('creds.yaml', 'r') as file:
+    CREDENTIALS = yaml.load(file)
 
 class TwilioAPI:
     def __init__(self):
         self.client = twilio.rest.Client(
-            CREDENTIALS['account'],
-            CREDENTIALS['token']
+            CREDENTIALS['twilio']['account'],
+            CREDENTIALS['twilio']['token']
         )
-        self.from_num = CREDENTIALS['num']
+        self.from_num = CREDENTIALS['twilio']['num']
 
     def send_sms(self, to_num, msg):
         response = self.client.messages.create(
@@ -29,10 +29,10 @@ class TwilioAPI:
 -- Tests --
 ===========
 """
-## Instantiate
-api = TwilioAPI()
+# ## Instantiate
+# api = TwilioAPI()
 
-## Send a message
-number = 18002255288
-message = 'Hello, this is a test!'
-api.send_sms(number, message)
+# ## Send a message
+# number = 18002255288
+# message = 'Hello, this is a test!'
+# api.send_sms(number, message)

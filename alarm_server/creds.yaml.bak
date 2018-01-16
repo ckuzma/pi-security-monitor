@@ -1,10 +1,17 @@
+mqtt-server:
+  url: foo
+  user: foo
+  key: foo
+  port: 1111
+  keepalive: 3600
+  feed: foo
 nexmo:
-  key: null
-  secret: null
-  num: 11111111111
-twilio:
-  account: null
-  token: null
-  num: 11111111111
+  key: foo
+  secret: foo
+  num: 111111111111
 owner:
-  num: 11111111111
+  num: 111111111111
+twilio:
+  account: foo
+  token: foo
+  num: foo
