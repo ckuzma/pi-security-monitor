@@ -2,7 +2,10 @@ import json
 import paho.mqtt.client as mqtt
 import yaml
 
-from api.twilio_api import TwilioAPI
+## SMS broker selection (needs to match in init below):
+# from api.twilio_api import TwilioAPI
+# from api.nexmo_api import NexmoAPI # Incompatible with RPi
+from api.hologram_api import HologramAPI
 
 ## Import the credentials
 CREDENTIALS = None
@@ -12,7 +15,9 @@ with open('creds.yaml', 'r') as file:
 class SecurityService:
     def __init__(self):
         self.armed = False
-        self.phone = TwilioAPI()
+        # self.phone = TwilioAPI()
+        # self.phone = NexmoAPI()
+        self.phone = HologramAPI()
     
     def run(self):
         ## Setup the MQTT client
