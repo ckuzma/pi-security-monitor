@@ -14,8 +14,13 @@ network={
 4. After the Pi has booted, figure out its IP address by looking at the list of devices connected to your WiFi access point.
 5. SSH into your Pi: `ssh pi@xxx.xxx.xxx.xxx`
 6. Change the default password as suggested at login. (Better yet, create a new account and password and delete the default (`pi`) user.)
-7. Enable VNC by running `raspi-config` in a terminal and toggling VNC under the interfaces menu.
-8. You are now ready to VNC into your Pi!
+7. Ensure that the VNC server is installed:
+```
+sudo apt-get update
+sudo apt-get install realvnc-vnc-server
+```
+8. Enable VNC by running `raspi-config` in a terminal and toggling VNC under the interfaces menu.
+9. You are now ready to VNC into your Pi!
 
 # Install CLI for Hologram.io / Nova Modem
 1. Follow the instructions found here to add the Hologram Command Line Interface for Linux devices: [Hologram Developer Tools](https://hologram.io/docs/guide/nova/developer-tools/)

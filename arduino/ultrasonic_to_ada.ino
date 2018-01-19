@@ -5,10 +5,10 @@
 // Credentials
 #define WLAN_SSID       ""
 #define WLAN_PASS       ""
-#define AIO_USERNAME    ""
-#define AIO_KEY         ""
-#define AIO_SERVER      "io.adafruit.com"
-#define AIO_SERVERPORT  8883
+#define MQTT_USERNAME    ""
+#define MQTT_KEY         ""
+#define MQTT_SERVER      "io.adafruit.com"
+#define MQTT_PORT  8883
 
 // Pins for Ultrasonic Range Sensor
 const int TRIG_PIN = D1;
@@ -23,10 +23,10 @@ float prev_measure_cm = 0.0;
 
 // Create secure connection to the MQTT server
 WiFiClientSecure client;
-Adafruit_MQTT_Client mqtt(&client, AIO_SERVER, AIO_SERVERPORT, AIO_USERNAME, AIO_KEY);
+Adafruit_MQTT_Client mqtt(&client, MQTT_SERVER, MQTT_PORT, MQTT_USERNAME, MQTT_KEY);
 
 // Conect to feeds
-Adafruit_MQTT_Publish security_feed = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/f/security_feed");
+Adafruit_MQTT_Publish security_feed = Adafruit_MQTT_Publish(&mqtt, MQTT_USERNAME "/f/security_feed");
 
 void setup() {
   Serial.begin(9600);
