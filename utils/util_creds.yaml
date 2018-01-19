@@ -1,0 +1,7 @@
+mqtt-server:
+  url: 192.168.0.144
+  user: test
+  key: foo
+  port: 1883
+  keepalive: 3600
+  feed: security_feed
