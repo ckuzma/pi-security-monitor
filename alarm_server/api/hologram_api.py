@@ -10,11 +10,14 @@ class HologramAPI:
         )
     
     def send_sms(self, to_num, msg):
-        response = self.client.sendSMS(
-            to_num,
-            msg
-        )
-        print(response)
+        try:
+            response = self.client.sendSMS(
+                to_num,
+                msg
+            )
+            print(response)
+        except:
+            print("FAIL: Unable to send SMS via Hologram. (Modem disconnected?)")
 
 """
 ===========
@@ -22,9 +25,9 @@ class HologramAPI:
 ===========
 """
 ## Instantiate
-api = HologramAPI()
+# api = HologramAPI()
 
 ## Send a message
-number = 18002255288
-message = 'Hello, this is a test!'
-api.send_sms(number, message)
+# number = 18002255288
+# message = 'Hello, this is a test!'
+# api.send_sms(number, message)

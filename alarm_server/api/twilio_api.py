@@ -16,23 +16,26 @@ class TwilioAPI:
         self.from_num = CREDENTIALS['twilio']['num']
 
     def send_sms(self, to_num, msg):
-        response = self.client.messages.create(
-            to=to_num,
-            from_=self.from_num,
-            body=msg
-        )
-        print(response)
-        # print(json.dumps(response, indent=2))
+        try:
+            response = self.client.messages.create(
+                to=to_num,
+                from_=self.from_num,
+                body=msg
+            )
+            print(response)
+            # print(json.dumps(response, indent=2))
+        except:
+            print("FAIL: Unable to send SMS via Twilio. (Credentials wrong?)")
 
 """
 ===========
 -- Tests --
 ===========
 """
-# ## Instantiate
+## Instantiate
 # api = TwilioAPI()
 
-# ## Send a message
+## Send a message
 # number = 18002255288
 # message = 'Hello, this is a test!'
 # api.send_sms(number, message)

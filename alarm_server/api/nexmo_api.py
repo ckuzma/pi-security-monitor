@@ -17,16 +17,19 @@ class NexmoAPI:
         self.from_num = CREDENTIALS['num']
     
     def send_sms(self, to_num, msg):
-        response = self.client.send_message({
-            'from': self.from_num,
-            'to': to_num,
-            'text': msg
-        })
-        if response['status'] == '0':
-            print('Sent message: ' + response['message-id'])
-            print('Remaining balance: ' + response['remaining-balance'])
-        else:
-            print('ERROR: ' + response['error-text'])
+        try:
+            response = self.client.send_message({
+                'from': self.from_num,
+                'to': to_num,
+                'text': msg
+            })
+            if response['status'] == '0':
+                print('Sent message: ' + response['message-id'])
+                print('Remaining balance: ' + response['remaining-balance'])
+            else:
+                print('ERROR: ' + response['error-text'])
+        except:
+            print("FAIL: Unable to send SMS via Nexmo. (Credentials wrong?)")
 
 """
 ===========
@@ -34,9 +37,9 @@ class NexmoAPI:
 ===========
 """
 ## Instantiate
-api = NexmoAPI()
+# api = NexmoAPI()
 
 ## Send a message
-number = 18002255288
-message = 'Hello, this is a test!'
-api.send_sms(number, message)
+# number = 18002255288
+# message = 'Hello, this is a test!'
+# api.send_sms(number, message)
