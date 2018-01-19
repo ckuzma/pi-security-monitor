@@ -7,6 +7,7 @@
 #define WLAN_PASS       ""
 #define MQTT_USERNAME    ""
 #define MQTT_KEY         ""
+#define MQTT_FEED        ""
 #define MQTT_SERVER      "io.adafruit.com"
 #define MQTT_PORT  8883
 
@@ -26,7 +27,7 @@ WiFiClientSecure client;
 Adafruit_MQTT_Client mqtt(&client, MQTT_SERVER, MQTT_PORT, MQTT_USERNAME, MQTT_KEY);
 
 // Conect to feeds
-Adafruit_MQTT_Publish security_feed = Adafruit_MQTT_Publish(&mqtt, MQTT_USERNAME "/f/security_feed");
+Adafruit_MQTT_Publish security_feed = Adafruit_MQTT_Publish(&mqtt, MQTT_FEED);
 
 void setup() {
   Serial.begin(9600);
