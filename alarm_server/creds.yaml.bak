@@ -1,17 +1,18 @@
 mqtt-server:
-  url: foo
-  user: foo
-  key: foo
-  port: 1111
+  url: localhost
+  user: host
+  key: host
+  port: 1883
   keepalive: 3600
-  feed: foo
+  feed: security_feed
 nexmo:
-  key: foo
-  secret: foo
-  num: 111111111111
+  key: key
+  secret: secret
+  num: 11111111111
 owner:
-  num: 111111111111
+  num: 11111111111
+  reminder-timeout: 300
 twilio:
-  account: foo
-  token: foo
-  num: foo
+  account: account
+  token: token
+  num: 11111111111
