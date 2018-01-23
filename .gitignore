@@ -8,3 +8,5 @@ pi_setup_files/wpa_supplicant\.conf
 alarm_server/creds\.yaml
 
 \.DS_Store
+
+*.pyc
