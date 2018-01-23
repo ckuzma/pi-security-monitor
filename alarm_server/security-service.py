@@ -1,5 +1,6 @@
-import json
+import datetime
 import paho.mqtt.client as mqtt
+import time
 import yaml
 
 ## SMS broker selection (needs to match in init below):
@@ -18,6 +19,7 @@ class SecurityService:
         # self.phone = TwilioAPI()
         # self.phone = NexmoAPI()
         self.phone = HologramAPI()
+        self.last_alarm = 0
     
     def run(self):
         ## Setup the MQTT client
@@ -45,21 +47,34 @@ class SecurityService:
     
     def _new_event(self, client, userdata, msg):
         ## Decode and print the message
-        msg = msg.payload.decode('utf-8')
-        print('New event: ' + str(msg))
+        msg = str(msg.payload.decode('utf-8'))
 
         ## If statements to arm/disarm alarm
         if msg == '_enable_alarm_':
             self.armed = True
+            self._print_update(msg, 'Alarm Active')
         elif msg == '_disable_alarm_':
             self.armed = False
+            self._print_update(msg, 'Alarm Off')
+
         ## Do something if armed
         elif self.armed == True:
-            print('Sending SMS alert!')
-            self.phone.send_sms(CREDENTIALS['owner']['num'], msg)
-
-        ## Print armed status to console
-        print('System Armed: ' + str(self.armed))
+            if int(time.time()) - self.last_alarm > CREDENTIALS['owner']['reminder-timeout']:
+                self._print_update(msg, 'Sending SMS')
+                self.phone.send_sms(CREDENTIALS['owner']['num'], msg)
+                self.last_alarm = int(time.time())
+            else:
+                time_remaining = int(time.time()) - self.last_alarm
+                time_remaining = CREDENTIALS['owner']['reminder-timeout'] - time_remaining
+                self._print_update(msg, 'Wait (' + str(time_remaining) + 's)')
+        
+        ## Print something if nothing
+        else:
+            self._print_update(msg, 'No action')
+    
+    def _print_update(self, event, action):
+        timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+        print(timestamp + '\tARMED: ' + str(self.armed) + '\t' + action + '\tMSG: ' + event)
 
 
 if __name__ == '__main__':
