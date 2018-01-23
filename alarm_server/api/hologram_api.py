@@ -1,9 +1,9 @@
 import json
-import Hologram
+from Hologram.HologramCloud import HologramCloud
 
 class HologramAPI:
     def __init__(self):
-        self.client = Hologram.HologramCloud.HologramCloud(
+        self.client = HologramCloud(
             dict(),
             network='cellular',
             authentication_type='csrpsk'
